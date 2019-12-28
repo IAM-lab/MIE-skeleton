@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Prescription dashboard for MIE module (University of Manchester)">
+  <meta name="author" content="Alan Davies">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+  <title>Prescribing dashboard</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+  <!-- Custom styles for this template-->
+  <link href="{{ url_for('static', filename='css/sb-admin-2.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/abx.css') }}" rel="stylesheet">
+  <script src="{{ url_for('static', filename='vendor/chart.js/Chart.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/barchart.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/popup.js') }}"></script>
+
+  <!-- Page script -->
+  <script type=text/javascript>
+        $SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
+
+        // Run JavaScript functions when page ready
+        $(document).ready(function () {
+            initializeMain();
+            barChart.drawChart({{pct|tojson}}, "bar-chart");
+        });
+  </script>
+</head>
+
+<body id="page-top">
+
+  <!-- Page Wrapper -->
+  <div id="wrapper">
+
+    <!-- Sidebar -->
+    <ul class="navbar-nav bg-gradient-info sidebar sidebar-dark accordion" id="accordionSidebar">
+
+      <!-- Divider -->
+      <hr class="sidebar-divider my-0">
+      <img id="uom-logo" src="{{url_for('static', filename='img/logo.png') }}" />
+      <br />
+      <hr class="sidebar-divider my-0">
+      <!-- Nav Item - Dashboard -->
+      <li class="nav-item active">
+        <div class="nav-link" onclick="popup.showAboutPopup();">
+          <i class="fas fa-info-circle"></i>
+          <span>About</span></div>
+      </li>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider">
+
+      <!-- Heading -->
+      <div class="sidebar-heading">
+        Main menu:
+      </div>
+
+
+
+      <!-- Nav Item - Utilities Collapse Menu -->
+      <li class="nav-item">
+        <div class="nav-link" onclick="popup.showCeatCalcFormPopup();">
+          <i class="fas fa-calculator"></i>
+          <span>Creatinine clearance</span>
+        </div>
+      </li>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider">
+    </ul>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+      <!-- Main Content -->
+      <div id="content">
+
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+          <!-- Sidebar Toggle (Topbar) -->
+          <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+
+          <!-- Topbar Navbar -->
+          <ul class="navbar-nav ml-auto">
+
+            <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+            <li class="nav-item dropdown no-arrow d-sm-none">
+              <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-search fa-fw"></i>
+              </a>
+              <!-- Dropdown - Messages -->
+              <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
+                <form class="form-inline mr-auto w-100 navbar-search">
+                  <div class="input-group">
+                    <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                      <button class="btn btn-primary" type="button">
+                        <i class="fas fa-search fa-sm"></i>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </li>
+
+            <div class="topbar-divider d-none d-sm-block"></div>
+
+              <!-- Sidebar Toggler (Sidebar) -->
+              <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+              </div>
+
+        </nav>
+        <!-- End of Topbar -->
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+          <!-- Page Heading -->
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Prescribing Dashboard</h1>
+          </div>
+
+          <!-- Content Row -->
+          <div class="row">
+
+            <!-- Total items -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total items:</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">{{ tile_data[0] }}</div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-pills fa-2x text-gray-300"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mean ACT cost -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Average ACT cost:</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">£</div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-pound-sign fa-2x text-gray-300"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Top prescribed items -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">TOP PRESCRIBED ITEM:</div>
+                      <span class="text_col_black"></span>
+                      <div class="row no-gutters align-items-center">
+                        <div class="col-auto">
+                          <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">%</div>
+                        </div>
+                        <div class="col">
+                          <div class="progress progress-sm mr-2">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pending Requests Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">NUMBER OF UNIQUE ITEMS:</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800"></div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-fingerprint fa-2x text-gray-300"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Content Row -->
+          <div class="row">
+            <div class="col-xl-12 col-lg-7">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">Prescribed items per Primary Care Trust (PCT)</h6>
+                </div>
+                <div class="card-body">
+                  <canvas id="bar-chart"></canvas>
+                </div>
+              </div>
+            </div>
+
+          <!-- Content Row -->
+          <div class="row last-row">
+
+            <!-- Content Column -->
+            <div class="col-xl-6">
+
+              <!-- Infection treatment drugs -->
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">Infection treatment drug as % of all infection treatments</h6>
+                </div>
+                <div class="card-body">
+
+                </div>
+              </div>
+
+            </div>
+            <div class="col-xl-6">
+              <!-- Show the BNF data for slected PCT -->
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">BNF data per PCT</h6>
+                </div>
+                <div class="card-body">
+                    <form method='POST' action="{{ url_for('dashboard.home') }}">
+                      <select class="custom-select" id="input-group-select" name="pct-option">
+                        {% for item in pct_list %}
+                        <option name="option-list" value="{{ item }}">{{ item }}</option>
+                        {% endfor %}
+                      </select>
+                      <input type="submit" value="Update" class="btn btn-outline-secondary" />
+                    </form>
+                    <hr />
+                    <table class="table">
+                    <thead>
+                      <td>Practice</td>
+                      <td>BNF code</td>
+                      <td>BNF name</td>
+                      <td>Items</td>
+                    </thead>
+                      <tbody>
+                      {% for row in pct_data %}
+                        <tr>
+                          <td>{{ row.practice }}</td>
+                          <td>{{ row.BNF_code }}</td>
+                          <td>{{ row.BNF_name }}</td>
+                          <td>{{ row.items }}</td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Creatinine clearance calculator -->
+          <div id="creat-calc">
+            <div class="card">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">Creatinine clearance calculator</h6>
+                </div>
+                <div class="card-body">
+                  <p>Sex of patient:</p>
+                  <div>
+                    <label class="radio-inline">
+                      <input type="radio" name="sex" value="m"> Male
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" name="sex" value="f"> Female
+                    </label>
+                    <p>Age of patient (years):</p>
+                    <input type="number" min="1" max="120" name="patients-age" />
+                    <br /><br />
+                    <p>Weight of patient (kg):</p>
+                    <input type="number" min="1" max="120" name="patients-weight" />
+                    <br /><br />
+                    <p>Serum creatinine (micromol/L):</p>
+                    <input type="number" min="1" max="120" name="patients-serum" />
+                    <br />
+                  </div>
+                  <br />
+                  <hr />
+                  <button type="button" class="btn btn-primary">Calculate</button>
+                  <button type="button" class="btn btn-danger" onclick="popup.hideCeatCalcFormPopup();">Close</button>
+                </div>
+              </div>
+          </div>
+
+          <!-- About popup -->
+          <div id="about-box">
+            <div class="card">
+              <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">About the prescribing dashboard</h6>
+                </div>
+                <div class="card-body">
+                  <p>?</p>
+                  <br />
+                  <hr />
+                   <button type="button" class="btn btn-danger" onclick="popup.hideAboutPopup();">Close</button>
+                </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.container-fluid -->
+
+      </div>
+      <!-- End of Main Content -->
+
+      <!-- Footer -->
+      <footer class="sticky-footer bg-white">
+        <div class="container my-auto">
+          <div class="copyright text-center my-auto">
+            <span>Copyright &copy; University of Manchester 2020</span>
+          </div>
+        </div>
+      </footer>
+      <!-- End of Footer -->
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+  </div>
+  <!-- End of Page Wrapper -->
+
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+  <!-- Page mask -->
+  <div id="page-mask"></div>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="{{ url_for('static', filename='vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="{{ url_for('static', filename='js/sb-admin-2.min.js') }}"></script>
+
+</body>
+
+</html>
