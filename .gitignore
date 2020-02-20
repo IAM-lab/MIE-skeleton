@@ -1,0 +1,9 @@
+# Default ignored files
+.git/
+.idea/
+.idea/workspace.xml
+.db
+*.db
+.db/
+*.db-journal
+*.pyc
