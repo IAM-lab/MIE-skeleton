@@ -18,7 +18,8 @@
   <!-- Custom styles for this template-->
   <link href="{{ url_for('static', filename='css/sb-admin-2.min.css') }}" rel="stylesheet">
   <link href="{{ url_for('static', filename='css/abx.css') }}" rel="stylesheet">
-  <script src="{{ url_for('static', filename='vendor/chart.js/Chart.min.js') }}"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.bundle.min.js"></script>
+
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   <script src="{{ url_for('static', filename='js/barchart.js') }}"></script>
   <script src="{{ url_for('static', filename='js/popup.js') }}"></script>
@@ -45,7 +46,7 @@
 
       <!-- Divider -->
       <hr class="sidebar-divider my-0">
-      <img id="uom-logo" src="{{url_for('static', filename='img/logo.png') }}" />
+      <img id="uom-logo" src="{{url_for('static', filename='img/logo-uom.png') }}" />
       <br />
       <hr class="sidebar-divider my-0">
       <!-- Nav Item - Dashboard -->
@@ -342,7 +343,7 @@
       <footer class="sticky-footer bg-white">
         <div class="container my-auto">
           <div class="copyright text-center my-auto">
-            <span>Copyright &copy; University of Manchester 2020</span>
+            <span>Copyright &copy; Alan Davies 2021</span>
           </div>
         </div>
       </footer>
