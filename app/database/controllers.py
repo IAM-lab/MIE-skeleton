@@ -17,17 +17,25 @@ database = Blueprint('dbutils', __name__, url_prefix='/dbutils')
 
 class Database:
     """Class for managing database queries."""
+    
+    def convert_tuple_list_to_raw(self, tuple_list):
+        """Helper function to convert results from tuple list to plain list."""
+        order_row = [tuple(row) for row in tuple_list]
+        return  [item for i in order_row for item in i]
+    
     def get_total_number_items(self):
         """Return the total number of prescribed items."""
-        return int(db.session.query(func.sum(PrescribingData.items).label('total_items')).first()[0])
-
+        return int(db.session.execute(db.select(func.sum(PrescribingData.items))).first()[0])
+            
     def get_prescribed_items_per_pct(self):
         """Return the total items per PCT."""
-        return db.session.query(func.sum(PrescribingData.items).label('item_sum')).group_by(PrescribingData.PCT).all()
+        result = db.session.execute(db.select(func.sum(PrescribingData.items).label('item_sum')).group_by(PrescribingData.PCT)).all()
+        return self.convert_tuple_list_to_raw(result)
 
     def get_distinct_pcts(self):
         """Return the distinct PCT codes."""
-        return db.session.query(PrescribingData.PCT).distinct().all()
+        result = db.session.execute(db.select(PrescribingData.PCT).distinct()).all()
+        return self.convert_tuple_list_to_raw(result)
 
     def get_n_data_for_PCT(self, pct, n):
         """Return all the data for a given PCT."""
